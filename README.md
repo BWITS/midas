@@ -44,8 +44,13 @@ $ midas
 
 ### Initial Setup
 
+1) set your develop environment in ~/.midas/config"
+such as:
 ```
-$ cat ~/.midas/config
+organization=example
 environment=dev
 buildkite_api_token=xxxxxxxxxxxxxxx
 ```
+2) make sure you already committed and pushed the changes
+3) make sure you run the tool in the right repository and branch
+4) make sure pipeline name is same as repository name
