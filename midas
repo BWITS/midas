@@ -1,0 +1,60 @@
+#!/usr/bin/env bash 
+
+set -eu -o pipefail
+
+usage() {
+  echo "Usage: $0"
+  echo "Prerequisite:"
+  echo "1) set your dev environment in ~/.midas/config"
+  echo "such as:"
+  echo ""
+  echo "organization=example"
+  echo "environment=dev"
+  echo "buildkite_api_token=xxxxxxxxxxxxxxxxxxxx"
+  echo ""
+  echo "2) make sure you already committed and pushed the changes"
+  echo "3) make sure you run the tool in the right repository and branch"
+  echo "4) make sure pipeline name is same as repository name"
+  echo ""
+}
+
+version() {
+  echo "Version: v1.0.0"
+}
+
+api-call() {
+    curl -H "Authorization: Bearer ${buildkite_api_token}" ${pipeline_url}/${repository}/builds \
+       -X POST \
+       --data @- <<END;
+{
+   "commit": "HEAD",
+   "branch": "${branch}",
+   "message": "build on branch ${branch} and environment ${environment} :rocket:",
+   "env": {
+      "ENVIRONMENT": "${environment}"
+   }
+}
+END
+}
+
+# Stage 1 - source the config"
+config="${HOME}/.midas/config"
+
+if [[ ! -f ${config} ]]; then
+  echo "Configuraiton file $config is not exist."
+  echo ""
+  usage
+  exit 1
+fi 
+
+source ${config}
+
+# Stage 2 - define pipeline url link and collect the repository name and branch.
+pipeline_url="https://api.buildkite.com/v2/organizations/${organization}/pipelines"
+branch=$(git rev-parse --abbrev-ref HEAD)
+repository=$(basename `git rev-parse --show-toplevel`|tr '[:upper:]' '[:lower:]')
+
+# Stage 3 - mapping the content to real pipeline name.
+echo "Going to deploy changes based on branch ${branch} in repo ${repository}"
+read -p "Press enter to continue"
+api-call
