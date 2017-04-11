@@ -12,7 +12,7 @@ The most famous King Midas is popularly remembered in Greek mythology for his ab
 $ brew update
 
 # Install the Homebrew tap.
-$ brew tap bwits/extra git@github.com:BWITS/homebrew-extra.git
+$ brew tap bwits/extra
 
 # List installed taps.
 $ brew tap
